@@ -101,10 +101,10 @@ function saveIssue() {
     var resolutionSummary = document.getElementById("inputResolutionSummary").value.trim();
 
     // Check that all required fields are filled in
-    if (!validateIssue(summary, description, reportedBy, dateIdentified, priority, status)) {
+    if (!validateIssue(summary, description, reportedBy, dateIdentified, priority, status, project)) {
         alert("Please fill in all required fields marked with *");
         //logging to see what function returns
-        console.log("validate issue returned:" + validateIssue(summary, description, reportedBy, dateIdentified, priority, status))
+        console.log("validate issue returned:" + validateIssue(summary, description, reportedBy, dateIdentified, priority, status, project))
 
         return;  // stop here, do not save
     }
@@ -117,7 +117,7 @@ function saveIssue() {
         reportedBy: reportedBy,
         dateIdentified: dateIdentified,
         assignedTo: assignedTo || "Unassigned",
-        project: project || "No Project",
+        project: project,
         priority: priority,
         status: status,
         targetDate: targetDate,

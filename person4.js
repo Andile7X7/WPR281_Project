@@ -151,8 +151,8 @@ if (!localStorage.getItem(Issue_Storage_Key)) {
 
 
 //function to validate the input from the issue form
-function validateIssue(summary, description, reportedBy, dateIdentified, priority, status) {
-    if (!summary || !description || !reportedBy || !dateIdentified) return false;
+function validateIssue(summary, description, reportedBy, dateIdentified, priority, status, project) {
+    if (!summary || !description || !reportedBy || !dateIdentified || !project) return false;
     if (priority !== "Low" && priority !== "Medium" && priority !== "High") return false;
     if (status !== "Open" && status !== "Resolved" && status !== "Overdue") return false;
     return true;
