@@ -1,296 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bug Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Login - Bug Tracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
 
-<body class="bg-light">
+<div class="card shadow p-4" style="width: 350px;">
+  <h3 class="text-center mb-3">Welcome</h3>
+  <p class="text-center text-muted">Login to Bug Tracker</p>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-dark bg-primary px-3 mb-3">
-        <span class="navbar-brand fw-bold" style="cursor: pointer;" onclick="goToDashboardPage()">🐛 Bug Tracker</span>
-        <div class="d-flex gap-2">
-            <button class="btn btn-light btn-sm" onclick="goToDashboardPage()">Dashboard</button>
-            <button class="btn btn-light btn-sm" onclick="goToNewIssueForm()">+ New Issue</button>
-            <button class="btn btn-light btn-sm" id="btnViewIssue" onclick="goToViewPage()" style="display:none;">View Issue</button>
-        </div>
-    </nav>
+  <div class="mb-3">
+    <label class="form-label">Username</label>
+    <input type="text" id="username" class="form-control" placeholder="Enter username">
+  </div>
 
+  <div class="mb-3">
+    <label class="form-label">Password</label>
+    <input type="password" id="password" class="form-control" placeholder="Enter password">
+  </div>
 
-    <!-- ===== CREATE / EDIT FORM PAGE ===== -->
-    <div id="formPage" class="container mt-4" style="max-width: 700px; display: none;">
+  <button class="btn btn-primary w-100" onclick="login()">Login</button>
 
-        <h4 id="formTitle">Create New Issue</h4>
-        <p class="text-muted" id="formSubtitle">Fill in the details below to log a bug.</p>
+  <p id="errorMsg" class="text-danger mt-3 text-center" style="display:none;">
+    Invalid username or password
+  </p>
+</div>
 
-        <!-- This hidden field stores the ID when we are editing an existing issue -->
-        <input type="hidden" id="hiddenTicketId">
-
-        <!-- SECTION 1: ISSUE DETAILS -->
-        <div class="card mb-3">
-            <div class="card-header">Issue Details</div>
-            <div class="card-body">
-
-                <div class="mb-3">
-                    <label class="form-label">Summary *</label>
-                    <input type="text" id="inputSummary" class="form-control" placeholder="What is the bug?">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Description *</label>
-                    <textarea id="inputDescription" class="form-control" rows="3"
-                        placeholder="Describe the bug in detail..."></textarea>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Reported By *</label>
-                        <input type="text" id="inputReportedBy" class="form-control" placeholder="Who found the bug?">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Date Identified *</label>
-                        <input type="date" id="inputDateIdentified" class="form-control">
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- SECTION 2: PEOPLE AND PROJECT -->
-        <div class="card mb-3">
-            <div class="card-header">People &amp; Project</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Assigned To</label>
-                        <select id="selectAssignedTo" class="form-select">
-                            <option value="">-- Unassigned --</option>
-                            <!-- <option value="Alice Mokoena">Alice Mokoena</option>
-                            <option value="Brian Nkosi">Brian Nkosi</option>
-                            <option value="Cleo Dlamini">Cleo Dlamini</option>
-                            <option value="David Sithole">David Sithole</option> -->
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Project *</label>
-                        <select id="selectProject" class="form-select">
-                            <option value="">-- Select Project --</option>
-                            <!-- <option value="Portal Frontend">Portal Frontend</option>
-                            <option value="API Gateway">API Gateway</option>
-                            <option value="Mobile App">Mobile App</option>
-                            <option value="Admin Dashboard">Admin Dashboard</option> -->
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 3: STATUS AND PRIORITY -->
-        <div class="card mb-3">
-            <div class="card-header">Status &amp; Priority</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Priority *</label>
-                        <select id="selectPriority" class="form-select">
-                            <option value="">-- Select --</option>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Status *</label>
-                        <select id="selectStatus" class="form-select">
-                            <option value="">-- Select --</option>
-                            <option value="Open">Open</option>
-                            <option value="Resolved">Resolved</option>
-                            <option value="Overdue">Overdue</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 4: DATES -->
-        <div class="card mb-3">
-            <div class="card-header">Dates</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Target Resolution Date</label>
-                        <input type="date" id="inputTargetDate" class="form-control">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Actual Resolution Date</label>
-                        <input type="date" id="inputActualResolutionDate" class="form-control">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 5: RESOLUTION -->
-        <div class="card mb-4">
-            <div class="card-header">Resolution</div>
-            <div class="card-body">
-                <label class="form-label">Resolution Summary <span class="text-muted">(fill in when the bug is
-                        fixed)</span></label>
-                <textarea id="inputResolutionSummary" class="form-control" rows="2"
-                    placeholder="How was the bug fixed?"></textarea>
-            </div>
-        </div>
-
-        <!-- FORM BUTTONS -->
-        <div class="d-flex gap-2 justify-content-end mb-5">
-            <button class="btn btn-outline-secondary" onclick="clearForm()">Clear</button>
-            <button class="btn btn-primary" onclick="saveIssue()">Save Issue</button>
-        </div>
-
-    </div>
-
-
-    <!-- ===== VIEW SINGLE ISSUE PAGE ===== -->
-    <div id="viewPage" class="container mt-4" style="max-width: 700px; display: none;">
-
-        <button class="btn btn-outline-secondary btn-sm mb-3" onclick="goToNewIssueForm()">← New Issue</button>
-
-        <!-- Issue title and badges -->
-        <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
-            <h4 id="viewSummary"></h4>
-            <div id="viewStatusAndPriorityBadges"></div>
-        </div>
-
-        <!-- Issue details card -->
-        <div class="card mb-3">
-            <div class="card-header">Details</div>
-            <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <p class="text-muted small mb-0">Ticket ID</p>
-                        <p class="fw-bold font-monospace" id="viewTicketId"></p>
-                    </div>
-                    <div class="col-sm-6">
-                        <p class="text-muted small mb-0">Project</p>
-                        <p class="fw-bold" id="viewProject"></p>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <p class="text-muted small mb-0">Reported By</p>
-                        <p class="fw-bold" id="viewReportedBy"></p>
-                    </div>
-                    <div class="col-sm-6">
-                        <p class="text-muted small mb-0">Assigned To</p>
-                        <p class="fw-bold" id="viewAssignedTo"></p>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-sm-4">
-                        <p class="text-muted small mb-0">Date Identified</p>
-                        <p class="fw-bold" id="viewDateIdentified"></p>
-                    </div>
-                    <div class="col-sm-4">
-                        <p class="text-muted small mb-0">Target Date</p>
-                        <p class="fw-bold" id="viewTargetDate"></p>
-                    </div>
-                    <div class="col-sm-4">
-                        <p class="text-muted small mb-0">Resolved On</p>
-                        <p class="fw-bold" id="viewActualResolutionDate"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Description card -->
-        <div class="card mb-3">
-            <div class="card-header">Description</div>
-            <div class="card-body">
-                <p id="viewDescription" class="mb-0"></p>
-            </div>
-        </div>
-
-        <!-- Resolution card - only shown if a resolution exists -->
-        <div class="card mb-3 border-success" id="resolutionCard" style="display:none;">
-            <div class="card-header text-success">Resolution Summary</div>
-            <div class="card-body">
-                <p id="viewResolutionSummary" class="mb-0"></p>
-            </div>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="d-flex gap-2 mb-5">
-            <button class="btn btn-primary" onclick="loadIssueIntoForm()">Edit Issue</button>
-            <button class="btn btn-outline-danger" onclick="deleteIssue()">Delete Issue</button>
-        </div>
-
-    </div>
-
-    <div id="dashboardPage" class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Issue Dashboard</h2>
-            <button class="btn btn-primary" onclick="goToNewIssueForm()">+ Create New Issue</button>
-        </div>
-
-        <!-- FILTERS -->
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <select id="statusFilter" class="form-select">
-                    <option value="">All Status</option>
-                    <option value="Open">Open</option>
-                    <option value="Resolved">Resolved</option>
-                    <option value="Overdue">Overdue</option>
-                </select>
-            </div>
-
-            <div class="col-md-3">
-                <select id="priorityFilter" class="form-select">
-                    <option value="">All Priority</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
-            </div>
-
-            <div class="col-md-6">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search issues...">
-            </div>
-        </div>
-
-        <!-- ISSUE TABLE -->
-        <table class="table table-bordered table-hover bg-white">
-            <thead class="table-dark">
-                <tr>
-                    <th>Summary</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Assigned To</th>
-                    <th>Project</th>
-                    <th>Target Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="issueTable"></tbody>
-        </table>
-
-        <!-- PAGINATION -->
-        <nav>
-            <ul class="pagination justify-content-center" id="pagination"></ul>
-        </nav>
-    </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="person4.js"></script>
-    <script src="person1.js"></script>
-    <script src="Project.js"></script>
-    <script src="people.js"></script>
-    <script src="Dashboard.js"></script>
-
-
+<script src="Logic.js"></script>
 </body>
-
 </html>

@@ -284,3 +284,27 @@ function DeleteById(issueId) {
         goToDashboardPage();
     }
 }
+// LOG IN LOGIC
+ function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    // Demo login (as per project: single admin account)
+    const adminUser = "admin";
+    const adminPass = "1234";
+
+    if (username === adminUser && password === adminPass) {
+      // Save login state
+      localStorage.setItem("loggedIn", "true");
+
+      // Redirect to dashboard
+      window.location.href = "Main.html";
+    } else {
+      document.getElementById("errorMsg").style.display = "block";
+    }
+  }
+
+  // Optional: prevent access to login if already logged in
+//   if (localStorage.getItem("loggedIn") === "true") {
+//     window.location.href = "Main.html";
+//   }
