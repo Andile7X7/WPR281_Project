@@ -1,244 +1,193 @@
-// ============================================================
-// Person A - Issue (Ticket) Management
-// Responsibilities: Create, Edit, View, Delete issues
-// Data is saved in localStorage under the key "bugTrackerIssues"
-// ============================================================
+// ==========================================
+// SHARED CONFIGURATION (From storage.js)
+// ==========================================
+let Issue_Storage_Key = "bugTrackerIssues";
+let People_Storage_Key = "bugTrackerPeople";
+let Project_Storage_Key = "bugTrackerProject";
+
+let currentlyViewingId = null;
+
+// ==========================================
+// CORE DATA HELPERS (Connecting Person A & C)
+// ==========================================
+let getAllIssues = () => JSON.parse(localStorage.getItem(Issue_Storage_Key)) || [];
+let getAllPeople = () => JSON.parse(localStorage.getItem(People_Storage_Key)) || [];
+let getAllProjects = () => JSON.parse(localStorage.getItem(Project_Storage_Key)) || [];
+
+let saveAllIssues = (issues) => localStorage.setItem(Issue_Storage_Key, JSON.stringify(issues));
+
+// ==========================================
+// INITIALIZATION & SPA NAVIGATION
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Initialize Static Data (Person C)
+    initPeople();
+    initProjects();
+
+    // 2. Populate Form Dropdowns (Person C)
+    populateAssigneeDropdown();
+    populateProjectDropdown();
+
+    // 3. Set Date Identified to Today by default
+    document.getElementById("inputDateIdentified").value = new Date().toISOString().split('T')[0];
+
+    // 4. Start on Dashboard
+    showPage('dashboardPage');
+});
+
+function showPage(pageId) {
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+    document.getElementById(pageId).style.display = "block";
+
+    // Show the selected page
+    let targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.style.display = "block";
+    }
 
 
-// The key used to save and load issues from localStorage (Linked to person4.js)
-var STORAGE_KEY = Issue_Storage_Key;
+    if (pageId === "dashboardPage") loadDashboard();
+    if (pageId === "issuesPage") displayIssues();
 
-// Keeps track of which issue we are currently viewing
-var currentlyViewingId = null;
-
-
-// ── Get all issues from localStorage ────────────────────────
-
-getAllIssues();
-
-
-// ── Save all issues back into localStorage ───────────────────
-function saveAllIssues(issuesArray) {
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(issuesArray));  // convert array to string and save
-}
-
-
-// ── Show the form page and hide the view page ────────────────
-function goToFormPage() {
-    document.getElementById("formPage").style.display = "";
-    document.getElementById("viewPage").style.display = "none";
-    document.getElementById("dashboardPage").style.display = "none";
-}
-
-
-// ── Show the view page and hide the form page ────────────────
-function goToViewPage() {
-    document.getElementById("formPage").style.display = "none";
-    document.getElementById("viewPage").style.display = "";
-    document.getElementById("dashboardPage").style.display = "none";
-}
-
-
-function goToDashboardPage() {
-    document.getElementById("formPage").style.display = "none";
-    document.getElementById("viewPage").style.display = "none";
-    document.getElementById("dashboardPage").style.display = "";
-    // Refresh the table whenever we go to the dashboard
-    if (typeof displayIssues === "function") {
-        displayIssues();
+    // Refresh dropdowns whenever the form is opened
+    if (pageId === 'formPage') {
+        populateAssigneeDropdown();
+        populateProjectDropdown();
     }
 }
 
+// ==========================================
+// DASHBOARD LOGIC (Fixes Rubric #5)
+// ==========================================
+function loadDashboard() {
+    let issues = getAllIssues();
+    let today = new Date().toISOString().split('T')[0];
 
-// ── Clear the form and reset it to "Create New Issue" mode ───
-function clearForm() {
-    // Clear all text inputs and textareas
-    document.getElementById("hiddenTicketId").value = "";
-    document.getElementById("inputSummary").value = "";
-    document.getElementById("inputDescription").value = "";
-    document.getElementById("inputReportedBy").value = "";
-    document.getElementById("inputDateIdentified").value = "";
-    document.getElementById("inputTargetDate").value = "";
-    document.getElementById("inputActualResolutionDate").value = "";
-    document.getElementById("inputResolutionSummary").value = "";
+    let stats = { total: issues.length, open: 0, resolved: 0, overdue: 0 };
 
-    // Reset the dropdowns back to the first option
-    document.getElementById("selectAssignedTo").value = "";
-    document.getElementById("selectProject").value = "";
-    document.getElementById("selectPriority").value = "";
-    document.getElementById("selectStatus").value = "";
+    issues.forEach(issue => {
+        if (issue.status === "Resolved") stats.resolved++;
+        else if (issue.targetDate && issue.targetDate < today) stats.overdue++;
+        else stats.open++;
+    });
 
-    // Reset the heading back to "Create"
-    document.getElementById("formTitle").textContent = "Create New Issue";
-    document.getElementById("formSubtitle").textContent = "Fill in the details below to log a bug.";
+    document.getElementById("totalIssues").innerText = stats.total;
+    document.getElementById("openCount").innerText = stats.open;
+    document.getElementById("resolvedCount").innerText = stats.resolved;
+    document.getElementById("overdueCount").innerText = stats.overdue;
 }
 
-
-// ── Go to a blank new issue form ─────────────────────────────
-// This is called by the "New Issue" button in the navbar
-function goToNewIssueForm() {
-    clearForm();       // wipe the form clean first
-    goToFormPage();    // then show the form page
-}
-
-
-// ── Read the form, validate, and save the issue ───────────────
+// ==========================================
+// ISSUE MANAGEMENT (Person A Logic)
+// ==========================================
 function saveIssue() {
-
-    // Read all values from the form
-    var ticketId = document.getElementById("hiddenTicketId").value;
-    var summary = document.getElementById("inputSummary").value.trim();
-    var description = document.getElementById("inputDescription").value.trim();
-    var reportedBy = document.getElementById("inputReportedBy").value.trim();
-    var dateIdentified = document.getElementById("inputDateIdentified").value;
-    var assignedTo = document.getElementById("selectAssignedTo").value;
-    var project = document.getElementById("selectProject").value;
-    var priority = document.getElementById("selectPriority").value;
-    var status = document.getElementById("selectStatus").value;
-    var targetDate = document.getElementById("inputTargetDate").value;
-    var actualResolutionDate = document.getElementById("inputActualResolutionDate").value;
-    var resolutionSummary = document.getElementById("inputResolutionSummary").value.trim();
-
-    // Check that all required fields are filled in
-    if (!validateIssue(summary, description, reportedBy, dateIdentified, priority, status, project)) {
-        alert("Please fill in all required fields marked with *");
-        //logging to see what function returns
-        console.log("validate issue returned:" + validateIssue(summary, description, reportedBy, dateIdentified, priority, status, project))
-
-        return;  // stop here, do not save
-    }
-
-    // Build the issue object with all the data
-    var issue = {
-        id: ticketId ? ticketId : Date.now().toString(),
-        summary: summary,
-        description: description,
-        reportedBy: reportedBy,
-        dateIdentified: dateIdentified,
-        assignedTo: assignedTo || "Unassigned",
-        project: project,
-        priority: priority,
-        status: status,
-        targetDate: targetDate,
-        actualResolutionDate: actualResolutionDate,
-        resolutionSummary: resolutionSummary
+    let ticketId = document.getElementById("hiddenTicketId").value;
+    
+    let issue = {
+        id: ticketId || Date.now().toString(),
+        summary: document.getElementById("inputSummary").value.trim(),
+        description: document.getElementById("inputDescription").value.trim(),
+        reportedBy: document.getElementById("inputReportedBy").value.trim(),
+        dateIdentified: document.getElementById("inputDateIdentified").value,
+        assignedTo: document.getElementById("selectAssignedTo").value, // Person ID
+        project: document.getElementById("selectProject").value,       // Project ID
+        priority: document.getElementById("selectPriority").value,
+        status: document.getElementById("selectStatus").value,
+        targetDate: document.getElementById("inputTargetDate").value,
+        actualResolutionDate: document.getElementById("inputActualResolutionDate").value,
+        resolutionSummary: document.getElementById("inputResolutionSummary").value.trim()
     };
 
-    // Load the current list of issues from localStorage
-    var allIssues = getAllIssues();
-    console.log(allIssues)
-    //function to compute the status of a issue to prevent inaccurate data
-    issue.status = computeStatus(issue);
+    let allIssues = getAllIssues();
+
     if (ticketId) {
-        // We are EDITING - find the old issue and replace it
-        for (var i = 0; i < allIssues.length; i++) {
-            if (allIssues[i].id === ticketId) {
-                allIssues[i] = issue;
-                break;
-            }
-        }
-        alert("Issue updated successfully!");
+        const index = allIssues.findIndex(i => i.id === ticketId);
+        allIssues[index] = issue;
     } else {
-        // We are CREATING - add the new issue to the list
-        //function to compute the status of a issue to prevent inaccurate data
         allIssues.push(issue);
-        alert("Issue saved successfully!");
     }
 
-    // Save the updated list back to localStorage
     saveAllIssues(allIssues);
-    console.log(allIssues)
-
-    // Force refresh dashboard if we ever go back to it
-    if (typeof displayIssues === "function") {
-        displayIssues();
-    }
-
-    // Show the issue we just saved on the view page
+    alert("Issue Processed Successfully!");
     showIssueOnViewPage(issue.id);
 }
 
+// ==========================================
+// VIEW & EDIT LOGIC (Fixes Rubric #1, #6)
+// ==========================================
+function showIssueOnViewPage(id) {
+    const issue = getAllIssues().find(i => i.id == id);
+    if (!issue) return;
 
-// ── Find an issue by ID and display it on the view page ──────
-function showIssueOnViewPage(issueId) {
-    var allIssues = getAllIssues();
-    var foundIssue = null;
+    currentlyViewingId = id;
 
-    // Loop through all issues to find the one with the matching ID
-    for (var i = 0; i < allIssues.length; i++) {
-        if (allIssues[i].id === issueId) {
-            foundIssue = allIssues[i];
-            break;
-        }
-    }
+    // Map UI text
+    document.getElementById("viewSummary").innerText = issue.summary;
+    document.getElementById("viewDescription").innerText = issue.description;
+    document.getElementById("viewProject").innerText = getProjectNameById(issue.project);
+    document.getElementById("viewAssignedTo").innerText = getPersonNameById(issue.assignedTo);
+    document.getElementById("viewReportedBy").innerText = issue.reportedBy;
+    document.getElementById("viewDateIdentified").innerText = issue.dateIdentified;
+    document.getElementById("viewTargetDate").innerText = issue.targetDate || "Not Set";
+    document.getElementById("viewResolutionSummary").innerText = issue.resolutionSummary || "Pending...";
 
-    if (!foundIssue) {
-        alert("Issue not found.");
-        return;
-    }
+    // Badges
+    const pColor = { High: "danger", Medium: "warning", Low: "info" }[issue.priority];
+    const sColor = { Open: "primary", Resolved: "success", Overdue: "danger" }[issue.status];
+    
+    document.getElementById("viewStatusAndPriorityBadges").innerHTML = `
+        <span class="badge bg-${pColor}">${issue.priority}</span>
+        <span class="badge bg-${sColor}">${issue.status}</span>
+    `;
 
-    // Remember which issue we are viewing (needed for edit and delete)
-    currentlyViewingId = foundIssue.id;
-
-    UpdateViewPage(foundIssue);
-
-
-    // Show coloured badges for priority and status
-    var priorityColours = { Low: "success", Medium: "warning", High: "danger" };
-    var statusColours = { Open: "primary", Resolved: "success", Overdue: "danger" };
-
-    document.getElementById("viewStatusAndPriorityBadges").innerHTML =
-        '<span class="badge bg-' + (priorityColours[foundIssue.priority] || "secondary") + ' me-1">' + foundIssue.priority + '</span>' +
-        '<span class="badge bg-' + (statusColours[foundIssue.status] || "secondary") + '">' + foundIssue.status + '</span>';
-
-    // Show the "View Issue" button in the navbar and go to the view page
-    document.getElementById("btnViewIssue").style.display = "";
-    goToViewPage();
+    document.getElementById("btnViewIssue").style.display = "block";
+    showPage('viewPage');
 }
 
-// Make this function available to Person B's dashboard
-// so they can call showIssueOnViewPage(id) when a ticket is clicked
-window.BT_showIssue = showIssueOnViewPage;
-
-
-// ── Load an issue back into the form for editing ─────────────
 function loadIssueIntoForm() {
-    var allIssues = getAllIssues();
-    var foundIssue = null;
+    const issue = getAllIssues().find(i => i.id == currentlyViewingId);
+    if (!issue) return;
 
-    for (var i = 0; i < allIssues.length; i++) {
-        if (allIssues[i].id === currentlyViewingId) {
-            foundIssue = allIssues[i];
-            break;
-        }
-    }
+    document.getElementById("hiddenTicketId").value = issue.id;
+    document.getElementById("inputSummary").value = issue.summary;
+    document.getElementById("inputDescription").value = issue.description;
+    document.getElementById("selectProject").value = issue.project;
+    document.getElementById("selectAssignedTo").value = issue.assignedTo;
+    document.getElementById("selectPriority").value = issue.priority;
+    document.getElementById("selectStatus").value = issue.status;
+    document.getElementById("inputTargetDate").value = issue.targetDate;
+    document.getElementById("inputReportedBy").value = issue.reportedBy;
+    document.getElementById("inputResolutionSummary").value = issue.resolutionSummary;
 
-    if (!foundIssue) return;
-
-    // Use the helper function from person4.js
-    loadEditForm(foundIssue);
+    document.getElementById("formTitle").innerText = "Edit Issue";
+    showPage('formPage');
 }
 
-
-// ── Delete the issue we are currently viewing ────────────────
 function deleteIssue() {
-    var confirmed = confirm("Are you sure you want to delete this issue?");
-    if (!confirmed) return;
+    if (!confirm("Permanently delete this ticket?")) return;
+    const filtered = getAllIssues().filter(i => i.id != currentlyViewingId);
+    saveAllIssues(filtered);
+    showPage('issuesPage');
+}
 
-    var allIssues = getAllIssues();
-    var updatedIssues = [];
+// ==========================================
+// LIST VIEW (Fixes Rubric #7)
+// ==========================================
+function displayIssues() {
+    const issues = getAllIssues();
+    const tbody = document.getElementById("issueTable");
+    tbody.innerHTML = "";
 
-    // Keep every issue EXCEPT the one we want to delete
-    for (var i = 0; i < allIssues.length; i++) {
-        if (allIssues[i].id !== currentlyViewingId) {
-            updatedIssues.push(allIssues[i]);
-        }
-    }
-
-    saveAllIssues(updatedIssues);
-    alert("Issue deleted.");
-
-    // Go back to a blank new issue form
-    goToNewIssueForm();
+    issues.forEach(i => {
+        tbody.innerHTML += `
+            <tr onclick="showIssueOnViewPage('${i.id}')" style="cursor:pointer">
+                <td><strong>${i.summary}</strong></td>
+                <td>${getProjectNameById(i.project)}</td>
+                <td><span class="badge bg-light text-dark">${i.priority}</span></td>
+                <td><span class="badge bg-secondary">${i.status}</span></td>
+                <td>${getPersonNameById(i.assignedTo)}</td>
+                <td class="text-end"><button class="btn btn-sm btn-link">View</button></td>
+            </tr>
+        `;
+    });
 }
