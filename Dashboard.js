@@ -1,20 +1,14 @@
-// Sample data structure to get you started
-let issues = []; 
-
 function updateDashboard() {
-    // 1. Total Tickets
+    const issues = getAllIssues();
     const total = issues.length;
     document.getElementById('totalIssues').innerText = total;
 
-    // 2. Open Tickets
     const open = issues.filter(issue => issue.status === 'Open').length;
     document.getElementById('openCount').innerText = open;
 
-    // 3. Resolved Tickets
     const resolved = issues.filter(issue => issue.status === 'Resolved').length;
     document.getElementById('resolvedCount').innerText = resolved;
 
-    // 4. Overdue Tickets (Checks if Target Date < Today and not Resolved)
     const today = new Date().toISOString().split('T')[0];
     const overdue = issues.filter(issue => {
         return issue.status !== 'Resolved' && issue.targetDate < today && issue.targetDate !== "";
@@ -22,7 +16,12 @@ function updateDashboard() {
     
     document.getElementById('overdueCount').innerText = overdue;
 }
-updateDashboard();
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateDashboard();
+    showPage('dashboardPage');
+});
 
 // Navigation function
 function showPage(pageId) {
@@ -40,3 +39,6 @@ function showPage(pageId) {
         console.error("Page ID not found: " + pageId);
     }
 }
+
+
+

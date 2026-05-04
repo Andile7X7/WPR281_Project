@@ -1,6 +1,6 @@
-const People_Storage_Key = "peoplestoragekey"
-const Project_Storage_Key = "projectstoragekey"
-const Issue_Storage_Key = "bugTrackerIssues"
+const People_Storage_Key = "bugTrackerPeople";
+const Project_Storage_Key = "bugTrackerProject";
+const Issue_Storage_Key = "bugTrackerIssues";
 
 const seedIssues = [
     {
@@ -188,6 +188,10 @@ function getAllIssues() {
     }
 }
 
+function saveAllIssues(issues) {
+    localStorage.setItem(Issue_Storage_Key, JSON.stringify(issues));
+}
+
 function getAllProjects() {
     let allProjects = localStorage.getItem(Project_Storage_Key);
     if (allProjects) {
@@ -206,6 +210,14 @@ function getAllPeople() {
     else {
         return [];
     }
+}
+
+function saveAllPeople(people) {
+    localStorage.setItem(People_Storage_Key, JSON.stringify(people));
+}
+
+function saveAllProjects(projects) {
+    localStorage.setItem(Project_Storage_Key, JSON.stringify(projects));
 }
 // compute the status so that manual entry does not result in inaccurate data
 function computeStatus(issue) {
@@ -247,6 +259,7 @@ function UpdateViewPage(issue) {
 function setFormField(elementID, value) {
     document.getElementById(elementID).value = value;
 }
+// function to load issue data into form for when editing form, used in view page and dashboard
 function loadEditForm(foundIssue) {
     setFormField("hiddenTicketId", foundIssue.id);
     setFormField("inputSummary", foundIssue.summary);
@@ -265,6 +278,8 @@ function loadEditForm(foundIssue) {
     document.getElementById("formSubtitle").textContent = "Update the fields and click Save Issue.";
     goToFormPage();
 }
+
+// Function to delete an issue from the dashboard
 function DeleteById(issueId) {
     var confirmed = confirm("Are you sure you want to delete this issue?");
     if (!confirmed) return;
@@ -284,7 +299,7 @@ function DeleteById(issueId) {
         goToDashboardPage();
     }
 }
-// LOG IN LOGIC
+// LOG IN LOGIC checks if the inputs match the credentials and redirects to main page
  function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -298,13 +313,8 @@ function DeleteById(issueId) {
       localStorage.setItem("loggedIn", "true");
 
       // Redirect to dashboard
-      window.location.href = "Main.html";
+      window.location.href = "DashBoard.html";
     } else {
       document.getElementById("errorMsg").style.display = "block";
     }
   }
-
-  // Optional: prevent access to login if already logged in
-//   if (localStorage.getItem("loggedIn") === "true") {
-//     window.location.href = "Main.html";
-//   }

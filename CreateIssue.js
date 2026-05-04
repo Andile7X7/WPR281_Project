@@ -1,20 +1,7 @@
 // ==========================================
-// SHARED CONFIGURATION (From storage.js)
+// CORE DATA HELPERS
 // ==========================================
-let Issue_Storage_Key = "bugTrackerIssues";
-let People_Storage_Key = "bugTrackerPeople";
-let Project_Storage_Key = "bugTrackerProject";
-
 let currentlyViewingId = null;
-
-// ==========================================
-// CORE DATA HELPERS (Connecting Person A & C)
-// ==========================================
-let getAllIssues = () => JSON.parse(localStorage.getItem(Issue_Storage_Key)) || [];
-let getAllPeople = () => JSON.parse(localStorage.getItem(People_Storage_Key)) || [];
-let getAllProjects = () => JSON.parse(localStorage.getItem(Project_Storage_Key)) || [];
-
-let saveAllIssues = (issues) => localStorage.setItem(Issue_Storage_Key, JSON.stringify(issues));
 
 // ==========================================
 // INITIALIZATION & SPA NAVIGATION
@@ -53,11 +40,38 @@ function showPage(pageId) {
     if (pageId === 'formPage') {
         populateAssigneeDropdown();
         populateProjectDropdown();
+        // Clear form if no ticket ID is set (creating new issue)
+        if (!document.getElementById("hiddenTicketId").value) {
+            clearForm();
+        }
     }
 }
 
 // ==========================================
-// DASHBOARD LOGIC (Fixes Rubric #5)
+// FORM UTILITIES
+// ==========================================
+function clearForm() {
+    document.getElementById("hiddenTicketId").value = "";
+    document.getElementById("inputSummary").value = "";
+    document.getElementById("inputDescription").value = "";
+    document.getElementById("inputReportedBy").value = "";
+    document.getElementById("inputDateIdentified").value = new Date().toISOString().split('T')[0];
+    document.getElementById("inputTargetDate").value = "";
+    document.getElementById("inputActualResolutionDate").value = "";
+    document.getElementById("inputResolutionSummary").value = "";
+    document.getElementById("selectAssignedTo").value = "";
+    document.getElementById("selectProject").value = "";
+    document.getElementById("selectPriority").value = "";
+    document.getElementById("selectStatus").value = "";
+    document.getElementById("formTitle").innerText = "Log New Issue";
+}
+
+function goToNewIssueForm() {
+    clearForm();
+    showPage('formPage');
+}
+
+
 // ==========================================
 function loadDashboard() {
     let issues = getAllIssues();
@@ -144,6 +158,13 @@ function showIssueOnViewPage(id) {
     showPage('viewPage');
 }
 
+function RestrictEditing(){
+    document.getElementById("inputSummary").readOnly = true;
+    document.getElementById("inputDescription").readOnly = true;
+    document.getElementById("selectProject").readonly = true;
+    document.getElementById("selectStatus").readOnly = true;
+}
+
 function loadIssueIntoForm() {
     const issue = getAllIssues().find(i => i.id == currentlyViewingId);
     if (!issue) return;
@@ -160,6 +181,7 @@ function loadIssueIntoForm() {
     document.getElementById("inputResolutionSummary").value = issue.resolutionSummary;
 
     document.getElementById("formTitle").innerText = "Edit Issue";
+    RestrictEditing();
     showPage('formPage');
 }
 
