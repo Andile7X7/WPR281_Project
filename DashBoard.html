@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<body>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
+        <span class="navbar-brand fw-bold">🐞 Bug Tracker</span>
+        <div class="navbar-nav ms-auto">
+            <button class="nav-link btn btn-link text-white" onclick="showPage('dashboardPage')">Dashboard</button>
+            <button class="nav-link btn btn-link text-white" onclick="showPage('issuesPage')">View Issues</button>
+            <button class="nav-link btn btn-link text-white" onclick="goToNewIssueForm()">+ Create Issue</button>
+            <!-- Hidden button that only appears when viewing a specific ticket -->
+            <button id="btnViewIssue" class="nav-link btn btn-link text-info" style="display:none;" onclick="goToViewPage()">Current Ticket</button>
+            <button class="nav-link btn btn-link text-white" href="#" onclick="showPage('createPeoplePage')">+ Add Person </button>
+             
+        </div>
+        
+    </nav>
+
+    <main class="container mt-4">
+        
+        <!-- MAIN CONTAINER -->
+<main class="container mt-4">
+    
+    <!-- 1. DASHBOARD PAGE (Fixes #5: Structured Overview) -->
+    <div id="dashboardPage" class="page">
+        <h3 class="mb-4">System Dashboard</h3>
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="card bg-dark text-white border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6>Total Tickets</h6>
+                        <h2 id="totalIssues">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-primary border-start border-4 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-primary">Open</h6>
+                        <h2 id="openCount">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-success border-start border-4 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-success">Resolved</h6>
+                        <h2 id="resolvedCount">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-danger border-start border-4 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-danger">Overdue</h6>
+                        <h2 id="overdueCount">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. VIEW ALL ISSUES (Fixes #7: Visual Feedback) -->
+    <div id="issuesPage" class="page" style="display:none;">
+        <div class="d-flex justify-content-between mb-3">
+            <h3>Issue Registry</h3>
+            <div class="d-flex gap-2">
+                <input id="searchInput" class="form-control" placeholder="Search..." oninput="displayIssues()">
+                <select id="statusFilter" class="form-select" onchange="displayIssues()">
+                    <option value="">All Status</option>
+                    <option>Open</option>
+                    <option>Resolved</option>
+                    <option>Overdue</option>
+                </select>
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Summary</th>
+                        <th>Project</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Assignee</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="issueTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 3. DETAILED VIEW PAGE (Fixes #1: Missing Detail View) -->
+    <div id="viewPage" class="page" style="display:none;">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h4 class="mb-0" id="viewSummary">Issue Title</h4>
+                <div id="viewStatusAndPriorityBadges"></div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5>Description</h5>
+                        <p id="viewDescription" class="text-muted border p-3 rounded bg-light"></p>
+                        
+                        <h5 class="mt-4">Resolution Information</h5>
+                        <div class="p-3 rounded border border-success bg-success bg-opacity-10">
+                            <p id="viewResolutionSummary" class="mb-0 italic text-success">No resolution details provided.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="list-group list-group-flush border rounded">
+                            <div class="list-group-item"><strong>Project:</strong> <span id="viewProject"></span></div>
+                            <div class="list-group-item"><strong>Assigned To:</strong> <span id="viewAssignedTo"></span></div>
+                            <div class="list-group-item"><strong>Reported By:</strong> <span id="viewReportedBy"></span></div>
+                            <div class="list-group-item"><strong>Created:</strong> <span id="viewDateIdentified"></span></div>
+                            <div class="list-group-item"><strong>Target Date:</strong> <span id="viewTargetDate"></span></div>
+                        </div>
+                        <div class="mt-4 d-grid gap-2">
+                            <button class="btn btn-warning" onclick="loadIssueIntoForm()">Edit Issue</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteIssue()">Delete Ticket</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. CREATION/EDIT FORM (Fixes #2, #3, #4, #6) -->
+    <div id="formPage" class="page" style="display:none;">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white"><h4 id="formTitle" class="mb-0">Log New Issue</h4></div>
+            <div class="card-body">
+                <form onsubmit="saveIssue(); return false;">
+                    <input type="hidden" id="hiddenTicketId">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Summary *</label>
+                            <input type="text" id="inputSummary" class="form-control mb-3" required>
+                            
+                            <label class="form-label fw-bold">Detailed Description *</label>
+                            <textarea id="inputDescription" class="form-control mb-3" rows="4" required></textarea>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Resolution Date</label>
+                                    <input type="date" id="inputActualResolutionDate" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Resolution Summary</label>
+                                    <textarea id="inputResolutionSummary" class="form-control" rows="1"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 bg-light p-3 rounded">
+                            <label class="form-label fw-bold">Project *</label>
+                            <select id="selectProject" class="form-select mb-3" required></select>
+                            
+                            <label class="form-label fw-bold">Assign Person (Delayed Allowed)</label>
+                            <select id="selectAssignedTo" class="form-select mb-3"></select>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold">Priority *</label>
+                                    <select id="selectPriority" class="form-select mb-3" required>
+                                        <option>Low</option><option>Medium</option><option>High</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold">Status *</label>
+                                    <select id="selectStatus" class="form-select mb-3" required>
+                                        <option>Open</option><option>Resolved</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label class="form-label fw-bold">Target Date</label>
+                            <input type="date" id="inputTargetDate" class="form-control mb-3">
+                            
+                            <label class="form-label fw-bold">Reported By *</label>
+                            <input type="text" id="inputReportedBy" class="form-control mb-3" required>
+                            <input type="hidden" id="inputDateIdentified">
+                        </div>
+                    </div>
+                    <div class="mt-4 text-end">
+                        <button type="button" class="btn btn-secondary" onclick="showPage('issuesPage')">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-5">Save Ticket</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 5. TEAM MEMBERS / PEOPLE PAGE -->
+<div id="createPeoplePage" class="page" style="display:none;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Team Member Management</h4>
+        </div>
+        <div class="card-body">
+            <form onsubmit="savePerson(); return false;">
+                <input type="hidden" id="hiddenPersonId">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">First Name</label>
+                        <input type="text" id="inputFirstName" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Surname</label>
+                        <input type="text" id="inputSurname" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Email Address</label>
+                        <input type="email" id="inputEmail" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Username</label>
+                        <input type="text" id="inputUsername" class="form-control" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Profile Picture URL</label>
+                        <input type="text" id="inputProfilePic" class="form-control" placeholder="images/default.jpg">
+                    </div>
+                </div>
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-success px-5">Add Team Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</main>
+
+<script src="Dashboard.js"></script>
+</body>
+</html>
