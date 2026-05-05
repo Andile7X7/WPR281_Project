@@ -26,22 +26,19 @@ function showPage(pageId) {
     document.querySelectorAll(".page").forEach(p => p.style.display = "none");
     document.getElementById(pageId).style.display = "block";
 
-    // Show the selected page
     let targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.style.display = "block";
     }
 
-
     if (pageId === "dashboardPage") loadDashboard();
     if (pageId === "issuesPage") displayIssues();
 
-    // Refresh dropdowns whenever the form is opened
     if (pageId === 'formPage') {
-        populateAssigneeDropdown();
-        populateProjectDropdown();
-        // Clear form if no ticket ID is set (creating new issue)
-        if (!document.getElementById("hiddenTicketId").value) {
+        const isEditing = document.getElementById("hiddenTicketId")?.value;
+        if (!isEditing) {
+            populateAssigneeDropdown();
+            populateProjectDropdown();
             clearForm();
         }
     }
@@ -138,8 +135,8 @@ function showIssueOnViewPage(id) {
     // Map UI text
     document.getElementById("viewSummary").innerText = issue.summary;
     document.getElementById("viewDescription").innerText = issue.description;
-    document.getElementById("viewProject").innerText = getProjectNameById(issue.project);
-    document.getElementById("viewAssignedTo").innerText = getPersonNameById(issue.assignedTo);
+    document.getElementById("viewProject").innerText = issue.project || "No Project";
+    document.getElementById("viewAssignedTo").innerText = issue.assignedTo || "Unassigned";
     document.getElementById("viewReportedBy").innerText = issue.reportedBy;
     document.getElementById("viewDateIdentified").innerText = issue.dateIdentified;
     document.getElementById("viewTargetDate").innerText = issue.targetDate || "Not Set";
@@ -161,28 +158,56 @@ function showIssueOnViewPage(id) {
 function RestrictEditing(){
     document.getElementById("inputSummary").readOnly = true;
     document.getElementById("inputDescription").readOnly = true;
-    document.getElementById("selectProject").readonly = true;
+    document.getElementById("selectProject").disabled = true;
     document.getElementById("selectStatus").readOnly = true;
+    document.getElementById('inputReportedBy').readOnly = true;
 }
 
 function loadIssueIntoForm() {
     const issue = getAllIssues().find(i => i.id == currentlyViewingId);
     if (!issue) return;
 
-    document.getElementById("hiddenTicketId").value = issue.id;
-    document.getElementById("inputSummary").value = issue.summary;
-    document.getElementById("inputDescription").value = issue.description;
-    document.getElementById("selectProject").value = issue.project;
-    document.getElementById("selectAssignedTo").value = issue.assignedTo;
-    document.getElementById("selectPriority").value = issue.priority;
-    document.getElementById("selectStatus").value = issue.status;
-    document.getElementById("inputTargetDate").value = issue.targetDate;
-    document.getElementById("inputReportedBy").value = issue.reportedBy;
-    document.getElementById("inputResolutionSummary").value = issue.resolutionSummary;
+    populateProjectDropdown();
+    populateAssigneeDropdown();
 
-    document.getElementById("formTitle").innerText = "Edit Issue";
-    RestrictEditing();
-    showPage('formPage');
+    setTimeout(() => {
+        const projectSelect = document.getElementById('selectProject');
+        const assigneeSelect = document.getElementById('selectAssignedTo');
+        
+        // Case-insensitive match
+        if (issue.project) {
+            for (let opt of projectSelect.options) {
+                if (opt.value.toLowerCase() === issue.project.toLowerCase()) {
+                    projectSelect.value = opt.value;
+                    break;
+                }
+            }
+        }
+        
+        if (issue.assignedTo) {
+            for (let opt of assigneeSelect.options) {
+                if (opt.value.toLowerCase() === issue.assignedTo.toLowerCase()) {
+                    assigneeSelect.value = opt.value;
+                    break;
+                }
+            }
+        }
+
+        document.getElementById("hiddenTicketId").value = issue.id;
+        document.getElementById("inputSummary").value = issue.summary;
+        document.getElementById("inputDescription").value = issue.description;
+        document.getElementById("selectPriority").value = issue.priority;
+        document.getElementById("selectStatus").value = issue.status;
+        document.getElementById("inputTargetDate").value = issue.targetDate;
+        document.getElementById("inputReportedBy").value = issue.reportedBy;
+        document.getElementById("inputResolutionSummary").value = issue.resolutionSummary;
+
+        document.getElementById("formTitle").innerText = "Edit Issue";
+        RestrictEditing();
+        
+        document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+        document.getElementById("formPage").style.display = "block";
+    }, 10);
 }
 
 function deleteIssue() {
@@ -193,23 +218,89 @@ function deleteIssue() {
 }
 
 // ==========================================
-// LIST VIEW (Fixes Rubric #7)
+// LIST VIEW with Pagination
 // ==========================================
+const ITEMS_PER_PAGE = 5;
+let currentPage = 1;
+
 function displayIssues() {
-    const issues = getAllIssues();
+    let issues = getAllIssues();
     const tbody = document.getElementById("issueTable");
     tbody.innerHTML = "";
 
-    issues.forEach(i => {
+    const searchTerm = document.getElementById("searchInput")?.value?.toLowerCase() || "";
+    const statusFilter = document.getElementById("statusFilter")?.value || "";
+    const priorityFilter = document.getElementById("priorityFilter")?.value || "";
+
+    if (searchTerm || statusFilter || priorityFilter) {
+        issues = issues.filter(issue => {
+            const matchSearch = !searchTerm || 
+                (issue.summary?.toLowerCase().includes(searchTerm)) ||
+                (issue.description?.toLowerCase().includes(searchTerm)) ||
+                (issue.project?.toLowerCase().includes(searchTerm)) ||
+                (issue.assignedTo?.toLowerCase().includes(searchTerm));
+            const matchStatus = !statusFilter || issue.status === statusFilter;
+            const matchPriority = !priorityFilter || issue.priority === priorityFilter;
+            return matchSearch && matchStatus && matchPriority;
+        });
+    }
+
+    const totalPages = Math.ceil(issues.length / ITEMS_PER_PAGE);
+    if (totalPages > 0 && currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedIssues = issues.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    paginatedIssues.forEach(i => {
         tbody.innerHTML += `
             <tr onclick="showIssueOnViewPage('${i.id}')" style="cursor:pointer">
                 <td><strong>${i.summary}</strong></td>
-                <td>${getProjectNameById(i.project)}</td>
+                <td>${i.project || "No Project"}</td>
                 <td><span class="badge bg-light text-dark">${i.priority}</span></td>
                 <td><span class="badge bg-secondary">${i.status}</span></td>
-                <td>${getPersonNameById(i.assignedTo)}</td>
+                <td>${i.assignedTo || "Unassigned"}</td>
                 <td class="text-end"><button class="btn btn-sm btn-link">View</button></td>
             </tr>
         `;
     });
+
+    renderPagination(totalPages, currentPage);
+}
+
+function renderPagination(totalPages, page) {
+    const pagination = document.getElementById("pagination");
+    if (!pagination) return;
+    
+    pagination.innerHTML = "";
+    if (totalPages <= 1) return;
+
+    const prevDisabled = page === 1 ? "disabled" : "";
+    const nextDisabled = page === totalPages ? "disabled" : "";
+    
+    pagination.innerHTML += `
+        <li class="page-item ${prevDisabled}">
+            <button class="page-link" onclick="goToPage(${page - 1})" ${prevDisabled}>Previous</button>
+        </li>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+        const active = i === page ? "active" : "";
+        pagination.innerHTML += `
+            <li class="page-item ${active}">
+                <button class="page-link" onclick="goToPage(${i})">${i}</button>
+            </li>
+        `;
+    }
+
+    pagination.innerHTML += `
+        <li class="page-item ${nextDisabled}">
+            <button class="page-link" onclick="goToPage(${page + 1})" ${nextDisabled}>Next</button>
+        </li>
+    `;
+}
+
+function goToPage(pageNum) {
+    currentPage = pageNum;
+    displayIssues();
 }

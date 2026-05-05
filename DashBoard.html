@@ -83,6 +83,12 @@
                     <option>Resolved</option>
                     <option>Overdue</option>
                 </select>
+                <select id="priorityFilter" class="form-select" onchange="displayIssues()">
+                    <option value="">All Priority</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
             </div>
         </div>
         <div class="card shadow-sm">
@@ -100,6 +106,9 @@
                 <tbody id="issueTable"></tbody>
             </table>
         </div>
+        <nav>
+            <ul class="pagination justify-content-center mt-3" id="pagination"></ul>
+        </nav>
     </div>
 
     <!-- 3. DETAILED VIEW PAGE (Fixes #1: Missing Detail View) -->

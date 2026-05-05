@@ -33,11 +33,11 @@ function populateProjectDropdown() {
 
     if (!dropdown || !projects) return;
 
-    dropdown.innerHTML = '<option value="">-- Select Option --</option>';
+    dropdown.innerHTML = '<option value="">-- Select Project --</option>';
 
     projects.forEach(project => {
         let option = document.createElement('option');
-        option.value = project.id;
+        option.value = project.name;
         option.textContent = project.name;
         dropdown.appendChild(option);
     });

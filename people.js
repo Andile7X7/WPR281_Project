@@ -123,6 +123,47 @@ function initPeople() {
   }
 }
 
+function AddPerson(name, surname, email, username, profilePic){
+  let newPerson = {
+    id: Date.now() + Math.random(),
+    name: name,
+    surname: surname,
+    email: email,
+    username: username,
+    profilePic: profilePic
+  };
+  let allPeople = getAllPeople();
+  allPeople.push(newPerson);
+  saveAllPeople(allPeople);
+}
+
+function savePerson() {
+  let name = document.getElementById("inputFirstName").value.trim();
+  let surname = document.getElementById("inputSurname").value.trim();
+  let email = document.getElementById("inputEmail").value.trim();
+  let username = document.getElementById("inputUsername").value.trim();
+  let profilePic = document.getElementById("inputProfilePic").value.trim();
+
+  if (!name || !surname || !email || !username) {
+    alert("Please fill in all required fields");
+    return;
+  }
+
+  AddPerson(name, surname, email, username, profilePic);
+  
+  alert("Person added successfully!");
+  
+  document.getElementById("inputFirstName").value = "";
+  document.getElementById("inputSurname").value = "";
+  document.getElementById("inputEmail").value = "";
+  document.getElementById("inputUsername").value = "";
+  document.getElementById("inputProfilePic").value = "";
+  
+  showPage("issuesPage");
+}
+function saveAllPeople(people) {
+    localStorage.setItem(People_Storage_Key, JSON.stringify(people));
+}
 
 function populateAssigneeDropdown() {
   let dropdown = document.getElementById('assignee');
@@ -175,15 +216,12 @@ function getProjectNameById(id) {
 // 3. Populate Dropdowns (For the Form Page)
 function populateAssigneeDropdown() {
   let personSelect = document.getElementById('selectAssignedTo');
-
-
   let people = getAllPeople();
 
-  // Allow for "Delayed Assignment" by adding a default empty option
   if (personSelect) {
     personSelect.innerHTML = '<option value="">-- Assign Later --</option>';
     people.forEach(p => {
-      personSelect.innerHTML += `<option value="${p.id}">${p.name} ${p.surname}</option>`;
+      personSelect.innerHTML += `<option value="${p.name} ${p.surname}">${p.name} ${p.surname}</option>`;
     });
   }
 }

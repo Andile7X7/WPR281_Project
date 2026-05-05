@@ -3,147 +3,358 @@ const Project_Storage_Key = "bugTrackerProject";
 const Issue_Storage_Key = "bugTrackerIssues";
 
 const seedIssues = [
-    {
-        id: "1",
-        summary: "Login error",
-        description: "User cannot log in",
-        reportedBy: "Alice",
-        dateIdentified: "2026-04-01",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "High",
-        status: "Overdue",
-        targetDate: "2026-04-10",
-        actualResolutionDate: null,
-        resolutionSummary: ""
-    },
-    {
-        id: "2",
-        summary: "Button not working",
-        description: "Submit button does nothing",
-        reportedBy: "Brian",
-        dateIdentified: "2026-04-15",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "Medium",
-        status: "Open",
-        targetDate: "2026-05-05",
-        actualResolutionDate: null,
-        resolutionSummary: ""
-    },
-    {
-        id: "3",
-        summary: "Page crash",
-        description: "Profile page crashes on load",
-        reportedBy: "Cynthia",
-        dateIdentified: "2026-03-20",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "Low",
-        status: "Resolved",
-        targetDate: "2026-03-25",
-        actualResolutionDate: "2026-03-24",
-        resolutionSummary: "Fixed null pointer exception"
-    },
-    {
-        id: "4",
-        summary: "Slow performance",
-        description: "Dashboard loads very slowly",
-        reportedBy: "David",
-        dateIdentified: "2026-04-18",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "High",
-        status: "Open",
-        targetDate: "2026-05-01",
-        actualResolutionDate: null,
-        resolutionSummary: ""
-    },
-    {
-        id: "5",
-        summary: "Broken link",
-        description: "Help page link is broken",
-        reportedBy: "Ella",
-        dateIdentified: "2026-02-10",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "Medium",
-        status: "Overdue",
-        targetDate: "2026-03-01",
-        actualResolutionDate: null,
-        resolutionSummary: ""
-    },
-    {
-        id: "6",
-        summary: "Form validation issue",
-        description: "Email field accepts invalid input",
-        reportedBy: "Frank",
-        dateIdentified: "2026-04-05",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "Low",
-        status: "Resolved",
-        targetDate: "2026-04-07",
-        actualResolutionDate: "2026-04-06",
-        resolutionSummary: "Added regex validation"
-    },
-    {
-        id: "7",
-        summary: "Search not working",
-        description: "Search returns no results",
-        reportedBy: "Grace",
-        dateIdentified: "2026-04-12",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "High",
-        status: "Open",
-        targetDate: "2026-05-10",
-        actualResolutionDate: null,
-        resolutionSummary: ""
-    },
-    {
-        id: "8",
-        summary: "Image upload fails",
-        description: "Upload button throws error",
-        reportedBy: "Henry",
-        dateIdentified: "2026-01-15",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "Medium",
-        status: "Overdue",
-        targetDate: "2026-02-01",
-        actualResolutionDate: null,
-        resolutionSummary: ""
-    },
-    {
-        id: "9",
-        summary: "UI misalignment",
-        description: "Buttons overlap on mobile view",
-        reportedBy: "Isabel",
-        dateIdentified: "2026-04-02",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "Low",
-        status: "Resolved",
-        targetDate: "2026-04-05",
-        actualResolutionDate: "2026-04-04",
-        resolutionSummary: "Adjusted CSS flex layout"
-    },
-    {
-        id: "10",
-        summary: "Notification bug",
-        description: "Users don’t receive alerts",
-        reportedBy: "Jack",
-        dateIdentified: "2026-04-19",
-        assignedTo: "Unassigned",
-        project: "No Project",
-        priority: "Medium",
-        status: "Open",
-        targetDate: "2026-05-15",
-        actualResolutionDate: null,
-        resolutionSummary: ""
-    }
+  {
+    id: "1",
+    summary: "Login error",
+    description: "User cannot log in",
+    reportedBy: "Alice",
+    dateIdentified: "2026-04-01",
+    assignedTo: "john doe",
+    project: "Fifa 2026 World Cup",
+    priority: "High",
+    status: "Overdue",
+    targetDate: "2026-04-10",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "2",
+    summary: "Button not working",
+    description: "Submit button does nothing",
+    reportedBy: "Brian",
+    dateIdentified: "2026-04-15",
+    assignedTo: "sarah meyer",
+    project: "Ubuntu Clinic System",
+    priority: "Medium",
+    status: "Open",
+    targetDate: "2026-05-05",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "3",
+    summary: "Page crash",
+    description: "Profile page crashes on load",
+    reportedBy: "Cynthia",
+    dateIdentified: "2026-03-20",
+    assignedTo: "jane smith",
+    project: "Bunkhouse rental portal",
+    priority: "Low",
+    status: "Resolved",
+    targetDate: "2026-03-25",
+    actualResolutionDate: "2026-03-24",
+    resolutionSummary: "Fixed null pointer exception"
+  },
+  {
+    id: "4",
+    summary: "Slow performance",
+    description: "Dashboard loads very slowly",
+    reportedBy: "David",
+    dateIdentified: "2026-04-18",
+    assignedTo: "troy anderson",
+    project: "student lab network",
+    priority: "High",
+    status: "Open",
+    targetDate: "2026-05-01",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "5",
+    summary: "Broken link",
+    description: "Help page link is broken",
+    reportedBy: "Ella",
+    dateIdentified: "2026-02-10",
+    assignedTo: "andrew withers",
+    project: "Fifa 2026 World Cup",
+    priority: "Medium",
+    status: "Overdue",
+    targetDate: "2026-03-01",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "6",
+    summary: "Form validation issue",
+    description: "Email field accepts invalid input",
+    reportedBy: "Frank",
+    dateIdentified: "2026-04-05",
+    assignedTo: "alex ferguson",
+    project: "Ubuntu Clinic System",
+    priority: "Low",
+    status: "Resolved",
+    targetDate: "2026-04-07",
+    actualResolutionDate: "2026-04-06",
+    resolutionSummary: "Added regex validation"
+  },
+  {
+    id: "7",
+    summary: "Search not working",
+    description: "Search returns no results",
+    reportedBy: "Grace",
+    dateIdentified: "2026-04-12",
+    assignedTo: "maggy laurens",
+    project: "Bunkhouse rental portal",
+    priority: "High",
+    status: "Open",
+    targetDate: "2026-05-10",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "8",
+    summary: "Image upload fails",
+    description: "Upload button throws error",
+    reportedBy: "Henry",
+    dateIdentified: "2026-01-15",
+    assignedTo: "Paul mitchell",
+    project: "student lab network",
+    priority: "Medium",
+    status: "Overdue",
+    targetDate: "2026-02-01",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "9",
+    summary: "UI misalignment",
+    description: "Buttons overlap on mobile view",
+    reportedBy: "Isabel",
+    dateIdentified: "2026-04-02",
+    assignedTo: "shane carson",
+    project: "Fifa 2026 World Cup",
+    priority: "Low",
+    status: "Resolved",
+    targetDate: "2026-04-05",
+    actualResolutionDate: "2026-04-04",
+    resolutionSummary: "Adjusted CSS flex layout"
+  },
+  {
+    id: "10",
+    summary: "Notification bug",
+    description: "Users don’t receive alerts",
+    reportedBy: "Jack",
+    dateIdentified: "2026-04-19",
+    assignedTo: "mary stewart",
+    project: "Ubuntu Clinic System",
+    priority: "Medium",
+    status: "Open",
+    targetDate: "2026-05-15",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "11",
+    summary: "Password reset fails",
+    description: "Reset link does not send email",
+    reportedBy: "Karen",
+    dateIdentified: "2026-04-20",
+    assignedTo: "kate larson",
+    project: "student lab network",
+    priority: "High",
+    status: "Open",
+    targetDate: "2026-05-12",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "12",
+    summary: "Session timeout bug",
+    description: "Users stay logged in indefinitely",
+    reportedBy: "Leo",
+    dateIdentified: "2026-03-28",
+    assignedTo: "jordan King",
+    project: "Ubuntu Clinic System",
+    priority: "Medium",
+    status: "Overdue",
+    targetDate: "2026-04-15",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "13",
+    summary: "Search filter incorrect",
+    description: "Filter returns wrong results",
+    reportedBy: "Mona",
+    dateIdentified: "2026-04-08",
+    assignedTo: "nikolai sokolov",
+    project: "Bunkhouse rental portal",
+    priority: "Low",
+    status: "Resolved",
+    targetDate: "2026-04-12",
+    actualResolutionDate: "2026-04-11",
+    resolutionSummary: "Corrected query parameters"
+  },
+  {
+    id: "14",
+    summary: "Calendar sync error",
+    description: "Events not syncing with Google Calendar",
+    reportedBy: "Nathan",
+    dateIdentified: "2026-04-03",
+    assignedTo: "john doe",
+    project: "Fifa 2026 World Cup",
+    priority: "High",
+    status: "Open",
+    targetDate: "2026-05-20",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "15",
+    summary: "Broken CSS styles",
+    description: "Stylesheet not loading on Safari",
+    reportedBy: "Olivia",
+    dateIdentified: "2026-02-25",
+    assignedTo: "sarah meyer",
+    project: "student lab network",
+    priority: "Medium",
+    status: "Overdue",
+    targetDate: "2026-03-10",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "16",
+    summary: "Duplicate records",
+    description: "Database allows duplicate entries",
+    reportedBy: "Peter",
+    dateIdentified: "2026-04-14",
+    assignedTo: "jane smith",
+    project: "Ubuntu Clinic System",
+    priority: "High",
+    status: "Resolved",
+    targetDate: "2026-04-18",
+    actualResolutionDate: "2026-04-17",
+    resolutionSummary: "Added unique constraint"
+  },
+  {
+    id: "17",
+    summary: "Mobile menu hidden",
+    description: "Navigation menu not visible on iOS",
+    reportedBy: "Quincy",
+    dateIdentified: "2026-04-09",
+    assignedTo: "troy anderson",
+    project: "Bunkhouse rental portal",
+    priority: "Medium",
+    status: "Open",
+    targetDate: "2026-05-08",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "18",
+    summary: "Data export fails",
+    description: "CSV export produces empty file",
+    reportedBy: "Rachel",
+    dateIdentified: "2026-03-05",
+    assignedTo: "andrew withers",
+    project: "Fifa 2026 World Cup",
+    priority: "Low",
+    status: "Overdue",
+    targetDate: "2026-03-20",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "19",
+    summary: "Notification delay",
+    description: "Push notifications arrive late",
+    reportedBy: "Sam",
+    dateIdentified: "2026-04-16",
+    assignedTo: "alex ferguson",
+    project: "Ubuntu Clinic System",
+    priority: "Medium",
+    status: "Resolved",
+    targetDate: "2026-04-20",
+    actualResolutionDate: "2026-04-19",
+    resolutionSummary: "Optimized background job scheduling"
+  },
+  {
+    id: "20",
+    summary: "File download error",
+    description: "Downloaded files are corrupted",
+    reportedBy: "Tina",
+    dateIdentified: "2026-04-07",
+    assignedTo: "maggy laurens",
+    project: "student lab network",
+    priority: "High",
+    status: "Open",
+    targetDate: "2026-05-09",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "21",
+    summary: "Dark mode glitch",
+    description: "Text unreadable in dark mode",
+    reportedBy: "Uma",
+    dateIdentified: "2026-03-30",
+    assignedTo: "Paul mitchell",
+    project: "Bunkhouse rental portal",
+    priority: "Low",
+    status: "Overdue",
+    targetDate: "2026-04-10",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "22",
+    summary: "Report generation slow",
+    description: "Monthly reports take too long",
+    reportedBy: "Victor",
+    dateIdentified: "2026-04-11",
+    assignedTo: "shane carson",
+    project: "Fifa 2026 World Cup",
+    priority: "High",
+    status: "Resolved",
+    targetDate: "2026-04-15",
+    actualResolutionDate: "2026-04-14",
+    resolutionSummary: "Optimized SQL queries"
+  },
+  {
+    id: "23",
+    summary: "Image carousel stuck",
+    description: "Carousel does not auto-rotate",
+    reportedBy: "Wendy",
+    dateIdentified: "2026-04-13",
+    assignedTo: "mary stewart",
+    project: "Ubuntu Clinic System",
+    priority: "Medium",
+    status: "Open",
+    targetDate: "2026-05-11",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "24",
+    summary: "Form submission timeout",
+    description: "Large forms fail to submit",
+    reportedBy: "Xavier",
+    dateIdentified: "2026-02-18",
+    assignedTo: "kate larson",
+    project: "student lab network",
+    priority: "High",
+    status: "Overdue",
+    targetDate: "2026-03-05",
+    actualResolutionDate: null,
+    resolutionSummary: ""
+  },
+  {
+    id: "25",
+    summary: "Video playback issue",
+    description: "Videos do not load on Chrome",
+    reportedBy: "Yara",
+    dateIdentified: "2026-04-17",
+    assignedTo: "jordan King",
+    project: "Bunkhouse rental portal",
+    priority: "Medium",
+    status: "Resolved",
+    targetDate: "2026-04-21",
+    actualResolutionDate: "2026-04-20",
+    resolutionSummary: "Updated video player library"
+  }
 ];
+
 
 if (!localStorage.getItem(Issue_Storage_Key)) {
     localStorage.setItem(Issue_Storage_Key, JSON.stringify(seedIssues));
@@ -212,9 +423,7 @@ function getAllPeople() {
     }
 }
 
-function saveAllPeople(people) {
-    localStorage.setItem(People_Storage_Key, JSON.stringify(people));
-}
+
 
 function saveAllProjects(projects) {
     localStorage.setItem(Project_Storage_Key, JSON.stringify(projects));
@@ -259,25 +468,25 @@ function UpdateViewPage(issue) {
 function setFormField(elementID, value) {
     document.getElementById(elementID).value = value;
 }
-// function to load issue data into form for when editing form, used in view page and dashboard
-function loadEditForm(foundIssue) {
-    setFormField("hiddenTicketId", foundIssue.id);
-    setFormField("inputSummary", foundIssue.summary);
-    setFormField("inputDescription", foundIssue.description);
-    setFormField("inputReportedBy", foundIssue.reportedBy);
-    setFormField("inputDateIdentified", foundIssue.dateIdentified);
-    setFormField("inputTargetDate", foundIssue.targetDate);
-    setFormField("inputActualResolutionDate", foundIssue.actualResolutionDate);
-    setFormField("inputResolutionSummary", foundIssue.resolutionSummary);
-    setFormField("selectAssignedTo", foundIssue.assignedTo);
-    setFormField("selectProject", foundIssue.project);
-    setFormField("selectPriority", foundIssue.priority);
-    setFormField("selectStatus", foundIssue.status);
+// // function to load issue data into form for when editing form, used in view page and dashboard
+// function loadEditForm(foundIssue) {
+//     setFormField("hiddenTicketId", foundIssue.id);
+//     setFormField("inputSummary", foundIssue.summary);
+//     setFormField("inputDescription", foundIssue.description);
+//     setFormField("inputReportedBy", foundIssue.reportedBy);
+//     setFormField("inputDateIdentified", foundIssue.dateIdentified);
+//     setFormField("inputTargetDate", foundIssue.targetDate);
+//     setFormField("inputActualResolutionDate", foundIssue.actualResolutionDate);
+//     setFormField("inputResolutionSummary", foundIssue.resolutionSummary);
+//     setFormField("selectAssignedTo", foundIssue.assignedTo);
+//     setFormField("selectProject", foundIssue.project);
+//     setFormField("selectPriority", foundIssue.priority);
+//     setFormField("selectStatus", foundIssue.status);
 
-    document.getElementById("formTitle").textContent = "Edit Issue #" + foundIssue.id;
-    document.getElementById("formSubtitle").textContent = "Update the fields and click Save Issue.";
-    goToFormPage();
-}
+//     document.getElementById("formTitle").textContent = "Edit Issue #" + foundIssue.id;
+//     document.getElementById("formSubtitle").textContent = "Update the fields and click Save Issue.";
+//     goToFormPage();
+// }
 
 // Function to delete an issue from the dashboard
 function DeleteById(issueId) {
