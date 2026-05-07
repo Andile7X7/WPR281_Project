@@ -159,27 +159,10 @@ function savePerson() {
   document.getElementById("inputUsername").value = "";
   document.getElementById("inputProfilePic").value = "";
   
-  showPage("issuesPage");
+  populateAssigneeDropdown();
 }
 function saveAllPeople(people) {
     localStorage.setItem(People_Storage_Key, JSON.stringify(people));
-}
-
-function populateAssigneeDropdown() {
-  let dropdown = document.getElementById('assignee');
-  let people = getAllPeople(); // Get data 
-
-  if (!dropdown || !people) return;
-
-  // Clear existing options first (except the default one)
-  dropdown.innerHTML = '<option value="">-- Select Option --</option>';
-
-  people.forEach(person => {
-    let option = document.createElement('option');
-    option.value = person.id; // Store the ID as the value
-    option.textContent = `${person.name} ${person.surname}`; // Show name to user
-    dropdown.appendChild(option);
-  });
 }
 
 
